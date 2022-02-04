@@ -78,7 +78,10 @@ class LegendEngineTestCase(legend_operator_testing.TestBaseFinosCoreServiceLegen
         self.harness.begin()
         actual_uris = self.harness.charm._get_legend_gitlab_redirect_uris()
 
-        expected_url = "http://%s/callback" % self.harness.charm.app.name
+        expected_url = "http://%s%s/callback" % (
+            self.harness.charm.app.name,
+            charm.ENGINE_INGRESS_ROUTE,
+        )
         self.assertEqual([expected_url], actual_uris)
 
     def test_upgrade_charm(self):
@@ -91,7 +94,7 @@ class LegendEngineTestCase(legend_operator_testing.TestBaseFinosCoreServiceLegen
         # Test without external-hostname config.
         actual_url = self.harness.charm._get_engine_service_url()
 
-        expected_url = "http://%s" % self.harness.charm.app.name
+        expected_url = "http://%s%s" % (self.harness.charm.app.name, charm.ENGINE_INGRESS_ROUTE)
         self.assertEqual(expected_url, actual_url)
 
         # Test with external-hostname config.
@@ -99,5 +102,5 @@ class LegendEngineTestCase(legend_operator_testing.TestBaseFinosCoreServiceLegen
         self.harness.update_config({"external-hostname": hostname})
         actual_url = self.harness.charm._get_engine_service_url()
 
-        expected_url = "http://%s" % hostname
+        expected_url = "http://%s%s" % (hostname, charm.ENGINE_INGRESS_ROUTE)
         self.assertEqual(expected_url, actual_url)

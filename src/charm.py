@@ -19,7 +19,7 @@ LEGEND_GITLAB_RELATION_NAME = "legend-engine-gitlab"
 LEGEND_STUDIO_RELATION_NAME = "legend-engine"
 
 ENGINE_CONFIG_FILE_CONTAINER_LOCAL_PATH = "/engine-config.json"
-ENGINE_SERVICE_URL_FORMAT = "%(schema)s://%(host)s"
+ENGINE_SERVICE_URL_FORMAT = "%(schema)s://%(host)s%(ingress_path)s"
 ENGINE_GITLAB_REDIRECT_URI_FORMAT = "%(base_url)s/callback"
 
 TRUSTSTORE_PASSPHRASE = "Legend Engine"
@@ -28,6 +28,7 @@ TRUSTSTORE_CONTAINER_LOCAL_PATH = "/truststore.jks"
 APPLICATION_CONNECTOR_PORT_HTTP = 6060
 APPLICATION_CONNECTOR_PORT_HTTPS = 6066
 APPLICATION_ROOT_PATH = "/"
+ENGINE_INGRESS_ROUTE = "/engine"
 
 APPLICATION_LOGGING_FORMAT = "%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%thread] %c - %m%n"
 
@@ -51,6 +52,10 @@ class LegendEngineServerCharm(legend_operator_base.BaseFinosLegendCoreServiceCha
     @classmethod
     def _get_application_connector_port(cls):
         return APPLICATION_CONNECTOR_PORT_HTTP
+
+    @classmethod
+    def _get_ingress_routes(cls) -> str:
+        return ENGINE_INGRESS_ROUTE
 
     @classmethod
     def _get_workload_container_name(cls):
@@ -127,6 +132,7 @@ class LegendEngineServerCharm(legend_operator_base.BaseFinosLegendCoreServiceCha
                 # NOTE(aznashwan): we always return the plain HTTP endpoint:
                 "schema": legend_operator_base.APPLICATION_CONNECTOR_TYPE_HTTP,
                 "host": svc_name,
+                "ingress_path": ENGINE_INGRESS_ROUTE,
             }
         )
 
@@ -203,7 +209,7 @@ class LegendEngineServerCharm(legend_operator_base.BaseFinosLegendCoreServiceCha
             },
             "server": {
                 "type": "simple",
-                "applicationContextPath": "/",
+                "applicationContextPath": ENGINE_INGRESS_ROUTE,
                 "adminContextPath": "/admin",
                 "requestLog": {"appenders": []},
                 "connector": {
