@@ -69,9 +69,10 @@ class LegendEngineTestCase(legend_operator_testing.TestBaseFinosCoreServiceLegen
         rel = self.harness.charm.framework.model.get_relation(
             charm.LEGEND_STUDIO_RELATION_NAME, rel_id
         )
+        base_url = self.harness.charm._get_engine_service_base_url()
         self.assertEqual(
             rel.data[self.harness.charm.app],
-            {"legend-engine-url": self.harness.charm._get_engine_service_url()},
+            {"legend-engine-url": "%s/api" % base_url},
         )
 
     def test_get_legend_gitlab_redirect_uris(self):
@@ -84,12 +85,12 @@ class LegendEngineTestCase(legend_operator_testing.TestBaseFinosCoreServiceLegen
     def test_upgrade_charm(self):
         self._test_upgrade_charm()
 
-    def test_get_engine_service_url(self):
+    def test_get_engine_service_base_url(self):
         self.harness.set_leader(True)
         self.harness.begin_with_initial_hooks()
 
         # Test without external-hostname config.
-        actual_url = self.harness.charm._get_engine_service_url()
+        actual_url = self.harness.charm._get_engine_service_base_url()
 
         expected_url = "http://%s" % self.harness.charm.app.name
         self.assertEqual(expected_url, actual_url)
@@ -97,7 +98,7 @@ class LegendEngineTestCase(legend_operator_testing.TestBaseFinosCoreServiceLegen
         # Test with external-hostname config.
         hostname = "foo.lish"
         self.harness.update_config({"external-hostname": hostname})
-        actual_url = self.harness.charm._get_engine_service_url()
+        actual_url = self.harness.charm._get_engine_service_base_url()
 
         expected_url = "http://%s" % hostname
         self.assertEqual(expected_url, actual_url)
