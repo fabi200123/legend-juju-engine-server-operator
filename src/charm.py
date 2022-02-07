@@ -21,6 +21,7 @@ LEGEND_STUDIO_RELATION_NAME = "legend-engine"
 ENGINE_CONFIG_FILE_CONTAINER_LOCAL_PATH = "/engine-config.json"
 ENGINE_SERVICE_URL_FORMAT = "%(schema)s://%(host)s"
 ENGINE_GITLAB_REDIRECT_URI_FORMAT = "%(base_url)s/callback"
+ENGINE_API_FORMAT = "%(base_url)s/api"
 
 TRUSTSTORE_PASSPHRASE = "Legend Engine"
 TRUSTSTORE_CONTAINER_LOCAL_PATH = "/truststore.jks"
@@ -120,7 +121,7 @@ class LegendEngineServerCharm(legend_operator_base.BaseFinosLegendCoreServiceCha
     def _get_legend_db_relation_name(cls):
         return LEGEND_DB_RELATION_NAME
 
-    def _get_engine_service_url(self):
+    def _get_engine_service_base_url(self):
         svc_name = self.model.config["external-hostname"] or self.app.name
         return ENGINE_SERVICE_URL_FORMAT % (
             {
@@ -131,7 +132,7 @@ class LegendEngineServerCharm(legend_operator_base.BaseFinosLegendCoreServiceCha
         )
 
     def _get_legend_gitlab_redirect_uris(self):
-        base_url = self._get_engine_service_url()
+        base_url = self._get_engine_service_base_url()
         redirect_uris = [ENGINE_GITLAB_REDIRECT_URI_FORMAT % {"base_url": base_url}]
         return redirect_uris
 
@@ -220,7 +221,8 @@ class LegendEngineServerCharm(legend_operator_base.BaseFinosLegendCoreServiceCha
 
     def _on_studio_relation_joined(self, event: charm.RelationJoinedEvent) -> None:
         rel = event.relation
-        engine_url = self._get_engine_service_url()
+        base_url = self._get_engine_service_base_url()
+        engine_url = ENGINE_API_FORMAT % {"base_url": base_url}
         logger.info("Providing following Engine URL to Studio: %s", engine_url)
         rel.data[self.app]["legend-engine-url"] = engine_url
 
