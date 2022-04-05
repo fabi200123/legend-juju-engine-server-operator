@@ -223,6 +223,9 @@ class LegendEngineServerCharm(legend_operator_base.BaseFinosLegendCoreServiceCha
                 },
             },
             "metadataserver": {"pure": {"host": "127.0.0.1", "port": 8090}},
+            "relationalexecution": {
+                "tempPath": "/tmp/",
+            },
             "vaults": [],
         }
 
