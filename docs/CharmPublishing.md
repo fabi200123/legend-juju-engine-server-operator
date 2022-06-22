@@ -9,3 +9,9 @@ charmcraft login --export=secrets-engine.auth --charm=finos-legend-engine-k8s \
 ```
 
 This token will have to be updated periodically since it has a certain time to live set.
+
+By using the following `gh` command you can skip going through the repository settings to set the secret token:
+
+```bash
+gh -R finos/legend-juju-engine-server-operator secret set CHARMHUB_TOKEN < secrets-engine.auth
+```
